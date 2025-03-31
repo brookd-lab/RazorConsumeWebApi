@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeConnection"));
 }
 );
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+builder.Services.AddMvc().AddRazorPagesOptions(options =>
+{
+    options.Conventions.AddPageRoute("/Employees/Index", "");
+});
 
 var app = builder.Build();
 

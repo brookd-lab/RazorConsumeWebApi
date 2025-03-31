@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Product_Tutorial.Models;
 using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Employees
 {
     public class IndexModel : PageModel
     {
-        private readonly ApplicationDbContext context;
+        private readonly IEmployeeService _service;
 
         //pagination
 
@@ -26,86 +28,28 @@ namespace Product_Tutorial.Pages.Employees
         public string column = "id";
         public string orderBy = "desc";
 
-        public IndexModel(ApplicationDbContext context)
+        public IndexModel(IEmployeeService service)
         {
-            this.context = context;
+            _service = service;
         }
 
-        public List<Employee> employees { get; set; } = new();
+        [BindProperty]
+        public List<Employee> employees { get; set; }
 
-        public void OnGet(int? pageIndex, string? Search, string? column, string? orderBy)
+        public async Task<IActionResult> OnGet(int? pageIndex, string? Search, string? column, string? orderBy)
         {
-            IQueryable<Employee> query = context.employees; 
-          
-            if (Search != null)
-            {
-                this.Search = Search;
-                query = query.Where(p => p.Name.Contains(Search) || p.Age.ToString().Contains(Search));
-            }
-            // products = context.productTables.OrderByDescending(p => p.Id).ToList();
-            string[] validColumn = { "Id", "Name", "Brand", "Category", "Price", "CreateDate" };
-            string[] validOrderBy = { "desc", "asc" };
+            employees = await _service.GetEmployees();
 
+            if (Search == null)
+                return Page();
+            
+            this.Search = Search;
 
-            if (!validColumn.Contains(column))
-            {
-                column = "Id";
-            }
+            var Employees = employees.ToList().Where(p => p.Name.Contains(Search) || p.Age.ToString().Contains(Search));
 
-            if (!validOrderBy.Contains(orderBy))
-            {
-                orderBy = "desc";
-            }
-            this.orderBy = orderBy;
-            this.column = column;
+            employees = Employees.ToList();
 
-            if (column == "Id")
-            {
-                if (orderBy == "asc")
-                {
-                    query = query.OrderBy(p => p.Id);
-                }
-                else
-                {
-                    query = query.OrderByDescending(p => p.Id);
-                }
-            }
-            else
-            if (column == "Name")
-            {
-                if (orderBy == "asc")
-                {
-                    query = query.OrderBy(p => p.Name);
-                }
-                else
-                {
-                    query = query.OrderByDescending(p => p.Name);
-                }
-            }
-            else if (column == "Age")
-            {
-                if (orderBy == "asc")
-                {
-                    query = query.OrderBy(p => p.Age);
-                }
-                else
-                {
-                    query = query.OrderByDescending(p => p.Age);
-                }
-            }
-           
-            //   query = query.OrderByDescending(p => p.Id);
-            if (pageIndex == null || pageIndex < 1)
-            {
-                pageIndex = 1;
-            }
-            this.pageIndex = (int)pageIndex;
-
-            decimal count = query.Count();
-            totalpage = (int)Math.Ceiling(count / pageSize);
-            query = query.Skip((this.pageIndex - 1) * pageSize).Take(pageSize);
-            employees=query.ToList();
-
+            return Page();
         }
 
     }

@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Product_Tutorial.Models;
 using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Employees
-{ 
+{
     public class DetailsModel : PageModel
     {
-        private readonly Product_Tutorial.Services.ApplicationDbContext _context;
+        private readonly IEmployeeService _service;
 
-        public DetailsModel(Product_Tutorial.Services.ApplicationDbContext context)
+        public DetailsModel(IEmployeeService service)
         {
-            _context = context;
+            _service = service;
         }
 
         public Employee Employee { get; set; } = default!;
@@ -28,7 +29,7 @@ namespace Product_Tutorial.Pages.Employees
                 return NotFound();
             }
 
-            Employee? employee = await _context.employees.FirstOrDefaultAsync(m => m.Id == id);
+            Employee? employee = await _service.GetEmployeeById(id);
             if (employee == null)
             {
                 return NotFound();

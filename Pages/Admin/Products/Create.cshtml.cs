@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Product_Tutorial.Models;
-using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Admin.Products
 {

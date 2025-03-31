@@ -17,7 +17,7 @@
     <div class="col">
         <form class="d-flex">
             <input class="form-control me-2" type="search" name="Search" value="@Model.Search"
-                   placeholder="Search by name or Brand" aria-label="Search" />
+                   placeholder="Search by name or age" aria-label="Search" />
             <button class="btn btn-outline-danger">Search</button>
 
         </form>
@@ -48,6 +48,7 @@
         </tr>
     </thead>
     <tbody>
+@if(Model.employees?.Count() >0)
 @foreach (var item in Model.employees) {
         <tr>
             <td>

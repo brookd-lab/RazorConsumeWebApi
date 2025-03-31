@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Product_Tutorial.Models;
-using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Admin.Products
 {
     public class DeleteModel : PageModel
     {
-        private readonly Product_Tutorial.Services.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(Product_Tutorial.Services.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }

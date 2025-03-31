@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Product_Tutorial.Models;
 using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Employees
 {
     public class DeleteModel : PageModel
     {
-        private readonly Product_Tutorial.Services.ApplicationDbContext _context;
-
-        public DeleteModel(Product_Tutorial.Services.ApplicationDbContext context)
+        private readonly IEmployeeService _service;
+        
+        public DeleteModel(IEmployeeService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [BindProperty]
@@ -29,7 +26,7 @@ namespace Product_Tutorial.Pages.Employees
                 return NotFound();
             }
 
-            var employee = await _context.employees.FirstOrDefaultAsync(m => m.Id == id);
+            var employee = await _service.GetEmployeeById(id);
 
             if (employee == null)
             {
@@ -49,15 +46,15 @@ namespace Product_Tutorial.Pages.Employees
                 return NotFound();
             }
 
-            Employee? employee = await _context.employees.FindAsync(id)!;
+            Employee? employee = await _service.GetEmployeeById(id);
+
             if (employee != null)
             {
                 Employee = employee;
-                _context.employees.Remove(Employee);
-                await _context.SaveChangesAsync();
+                await _service.DeleteEmployeeById(id);
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Employees/Index");
         }
     }
 }

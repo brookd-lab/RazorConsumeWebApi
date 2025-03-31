@@ -9,31 +9,27 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Product_Tutorial.Models;
 using Product_Tutorial.Services;
+using RazorConsumeWebApi.Data;
 
 namespace Product_Tutorial.Pages.Employees
 {
     public class CreateModel : PageModel
-    {
+    {  
+        private readonly IEmployeeService _service;
         private string errormessage;
-        private string successmessage;
-        private readonly IWebHostEnvironment environment;
-        private readonly ApplicationDbContext context;
 
         [BindProperty]
         public Employee Employee { get; set; } = new();
 
-        public CreateModel(IWebHostEnvironment environment, ApplicationDbContext context)
+        public CreateModel(IEmployeeService service)
         {
-            this.environment = environment;
-            this.context = context;
-
+            _service = service;
             errormessage = "";
-            successmessage = "";
         }
         public void OnGet()
         {
         }
-        public void OnPost()
+        public async Task OnPost()
         {
             if (!ModelState.IsValid)
             {
@@ -48,16 +44,15 @@ namespace Product_Tutorial.Pages.Employees
                 Name = Employee.Name,
                 Age = Employee.Age,
             };
-            context.employees.Add(employee);
-            context.SaveChanges();
-            Response.Redirect("/Employees/Index");
+            
+            await _service.CreateEmployee(employee);
 
             //clear the Form
             Employee.Name = "";
             Employee.Age = 0;
             
             ModelState.Clear();
-            successmessage = "Employee Added successfully ";
+            Response.Redirect("/Employees/Index");
         }
 
         // [BindProperty]
