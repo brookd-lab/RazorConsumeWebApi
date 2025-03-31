@@ -9,5 +9,6 @@ namespace Product_Tutorial.Services
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> contextOptions) : base(contextOptions)
         { }
         public DbSet<ProductTable> productTables { get; set;  }
+        public DbSet<Employee> employees { get; set; }
     }
 }
